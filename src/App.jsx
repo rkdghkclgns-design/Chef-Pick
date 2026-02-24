@@ -139,22 +139,22 @@ const DEMO_RECIPES = [
 ];
 
 // --- 시그니처 로고 (주방 모자 + 콧수염) ---
-const SignatureLogo = () => (
-    <div className="flex items-center gap-3">
+const SignatureLogo = ({ onClick }) => (
+    <button onClick={onClick} className="flex items-center gap-3 cursor-pointer bg-transparent border-none outline-none">
         <div className="relative flex flex-col items-center justify-center w-12 h-12 bg-slate-900 rounded-2xl shadow-xl border border-slate-700/50 group transition-all">
             <span className="text-xl leading-none group-hover:scale-110 transition-transform">👨‍🍳</span>
             <svg className="w-6 h-2 text-amber-500 mt-[-2px]" viewBox="0 0 24 8" fill="currentColor">
                 <path d="M12 4C10 0 6 0 4 2C2 4 2 6 4 7C6 8 10 7 12 5C14 7 18 8 20 7C22 6 22 4 20 2C18 0 14 0 12 4Z" />
             </svg>
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col text-left">
             <h1 className="text-xl font-black italic tracking-tighter leading-none" style={{ fontFamily: 'Georgia, serif' }}>Chef's Pick</h1>
             <div className="flex items-center gap-1 mt-1">
                 <div className="w-1 h-1 bg-amber-500 rounded-full animate-pulse"></div>
                 <span className="text-[8px] font-bold text-slate-400 uppercase tracking-[0.2em]">Signature Edition</span>
             </div>
         </div>
-    </div>
+    </button>
 );
 
 export default function App() {
@@ -246,7 +246,6 @@ export default function App() {
 
     // 로컬 데모 시딩: Firebase 없이 클라이언트에서 샘플 데이터 추가
     const runSeeding = async () => {
-        if (!confirm("로컬 데모 모드: 1,000개의 샘플 데이터를 생성하시겠습니까?")) return;
         setIsSeeding(true);
         const authors = ['Master Lee', 'Chef Won', 'Sam Choi', 'Choi HS', 'Gordon', 'Chef Ahn'];
         const dishes = [
@@ -298,9 +297,8 @@ export default function App() {
             {/* Header */}
             <header className="sticky top-0 z-50 glass border-b border-slate-100">
                 <div className="max-w-screen-xl mx-auto px-6 h-20 flex items-center justify-between">
-                    <SignatureLogo />
-
-                    <div className="flex items-center gap-3">
+                    {/* 왼쪽 여백 (균형 맞추기) */}
+                    <div className="flex items-center gap-3 w-40">
                         <div className="relative">
                             <div className="flex items-center gap-2 bg-slate-50 border border-slate-100 px-4 py-2.5 rounded-2xl hover:bg-white transition-all shadow-sm">
                                 <Globe className="w-4 h-4 text-slate-400" />
@@ -317,7 +315,13 @@ export default function App() {
                                 <ChevronDown className="w-3 h-3 text-slate-400 absolute right-4 pointer-events-none" />
                             </div>
                         </div>
-                        <div className="h-6 w-[1px] bg-slate-100 hidden sm:block mx-1"></div>
+                    </div>
+
+                    {/* 중앙 로고 */}
+                    <SignatureLogo onClick={() => { setView('user'); setActiveRecipe(null); setFilter('all'); setSearchQuery(''); window.scrollTo({ top: 0, behavior: 'smooth' }); }} />
+
+                    {/* 오른쪽 설정 */}
+                    <div className="flex items-center justify-end w-40">
                         <button onClick={() => setShowLoginModal(true)} className="p-3 text-slate-400 hover:text-black hover:bg-slate-50 rounded-2xl transition-all">
                             <Settings className="w-5 h-5" />
                         </button>
@@ -390,7 +394,7 @@ export default function App() {
                                         <img src={r.img} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" alt="" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/10 to-transparent opacity-80" />
 
-                                        <button onClick={(e) => toggleFav(e, r.id)} className="absolute top-6 right-6 w-12 h-12 rounded-3xl glass flex items-center justify-center shadow-2xl transition-all active:scale-75">
+                                        <button onClick={(e) => toggleFav(e, r.id)} className="absolute top-6 right-6 w-12 h-12 rounded-full glass flex items-center justify-center shadow-2xl transition-all active:scale-75 overflow-hidden" style={{ WebkitBackfaceVisibility: 'hidden', backfaceVisibility: 'hidden' }}>
                                             <Heart className={`w-5 h-5 ${userFavs.includes(r.id) ? 'fill-red-500 text-red-500' : 'text-white'}`} />
                                         </button>
 
@@ -551,7 +555,7 @@ export default function App() {
                                         <p className="text-[10px] font-black text-amber-600 uppercase mb-2 tracking-widest">{linkType} pick</p>
                                         <p className="text-lg font-black text-slate-900 line-clamp-1">{ing.name}</p>
                                     </div>
-                                    <a href={`https://link.coupang.com/a/${linkType === 'cheap' ? ing.cheap_code : ing.best_code}?subid=admin_link`} target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-slate-900 text-white rounded-3xl text-[11px] font-black shadow-lg hover:bg-amber-600 transition-colors uppercase tracking-widest">Add</a>
+                                    <a href={`https://link.coupang.com/a/${linkType === 'cheap' ? ing.cheap_code : ing.best_code}?subid=rkdghkclgns`} target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-slate-900 text-white rounded-3xl text-[11px] font-black shadow-lg hover:bg-amber-600 transition-colors uppercase tracking-widest">Add</a>
                                 </div>
                             ))}
                         </div>
