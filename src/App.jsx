@@ -62,79 +62,275 @@ const i18n = {
     }
 };
 
-// --- 로컬 데모용 샘플 레시피 데이터 ---
-const DEMO_RECIPES = [
+// --- 쿠팡 파트너스 링크 생성 헬퍼 ---
+const COUPANG_PARTNER_ID = 'rkdghkclgns';
+const coupangSearchUrl = (query) =>
+    `https://www.coupang.com/np/search?component=&q=${encodeURIComponent(query)}&channel=user&sourceType=srp&landingType=search&subId=${COUPANG_PARTNER_ID}`;
+
+// --- 실제 레시피 데이터 ---
+const REAL_RECIPES = [
     {
-        id: 'demo-1', title: 'Signature 김치찌개 by Master Lee #1', author: 'Master Lee',
-        category: 'black-white', tags: ['김치', '찌개', '한식'], date: '2026-02-25T00:00:00Z',
+        id: 'recipe-1',
+        title: '백종원 김치찌개',
+        author: '백종원',
+        category: 'black-white',
+        tags: ['김치', '찌개', '한식', '백종원', '국물요리'],
+        date: '2026-02-25T00:00:00Z',
         img: 'https://images.unsplash.com/photo-1498654896293-37aacf113fd9?q=80&w=800&auto=format&fit=crop',
-        source: 'https://www.youtube.com',
-        steps: ['배추김치와 돼지고기를 준비합니다.', '냄비에 기름을 두르고 돼지고기를 볶습니다.', '김치를 넣고 함께 볶다가 물을 부어 끓입니다.', '두부를 썰어 넣고 5분간 더 끓이면 완성!'],
-        ings: [{ name: '배추김치 500g', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }, { name: '돼지고기 앞다리살 300g', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }],
-        globalFavs: 234
+        source: 'https://www.youtube.com/@paaborecipe',
+        desc: '백종원 셰프의 시그니처 김치찌개. 잘 익은 묵은지와 돼지고기 앞다리살을 사용하여 깊고 진한 맛을 내는 정통 레시피입니다. 밥 한 그릇이 절로 비워지는 한국인의 소울푸드!',
+        steps: [
+            '묵은지 500g을 먹기 좋은 크기로 자릅니다. 김치 국물도 버리지 마세요.',
+            '돼지고기 앞다리살 300g은 2cm 두께로 썰어줍니다.',
+            '냄비에 참기름 1큰술을 두르고, 돼지고기를 중불에서 2분간 볶아 겉면을 익힙니다.',
+            '돼지고기가 반쯤 익으면 김치를 넣고 함께 3분간 볶아 김치의 신맛을 날립니다.',
+            '물 600ml(약 3컵)을 붓고, 김치국물 3큰술을 함께 넣습니다.',
+            '고춧가루 1큰술, 국간장 1큰술, 설탕 반큰술로 간을 맞춥니다.',
+            '센 불에서 끓어오르면 중불로 줄이고 10분간 보글보글 끓입니다.',
+            '두부 반모를 2cm 두께로 썰어 찌개 위에 가지런히 올립니다.',
+            '대파 1대를 송송 썰어 올리고 3분 더 끓이면 완성!',
+            '꿀팁: 밥을 넣어 끓여 김치찌개 리조또로도 즐길 수 있습니다.'
+        ],
+        ings: [
+            { name: '묵은지 500g', search: '묵은지 김치' },
+            { name: '돼지고기 앞다리살 300g', search: '돼지고기 앞다리살' },
+            { name: '두부 1모', search: '두부' },
+            { name: '대파 1대', search: '대파' },
+            { name: '고춧가루', search: '고춧가루' },
+            { name: '참기름', search: '참기름' },
+            { name: '국간장', search: '국간장' }
+        ],
+        globalFavs: 1842
     },
     {
-        id: 'demo-2', title: 'Signature 오일 파스타 by Chef Won #2', author: 'Chef Won',
-        category: 'viral', tags: ['자취', '간단', '양식', '파스타'], date: '2026-02-24T00:00:00Z',
-        img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=800&auto=format&fit=crop',
-        source: 'https://www.youtube.com',
-        steps: ['스파게티 면을 알덴테로 삶습니다.', '팬에 올리브오일과 마늘을 볶아 향을 냅니다.', '페퍼론치노를 넣고 면수를 한 국자 추가합니다.', '삶은 면을 넣고 잘 섞어 완성합니다.'],
-        ings: [{ name: '스파게티 면 200g', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }, { name: '올리브오일', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }],
-        globalFavs: 187
-    },
-    {
-        id: 'demo-3', title: 'Signature 안심 스테이크 by Gordon #3', author: 'Gordon',
-        category: 'black-white', tags: ['고기', '프리미엄', '파티', '스테이크'], date: '2026-02-23T00:00:00Z',
-        img: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=800&auto=format&fit=crop',
-        source: 'https://www.youtube.com',
-        steps: ['안심을 실온에 30분 꺼내 둡니다.', '소금, 후추로 시즈닝합니다.', '강불에 달군 팬에 버터를 녹이고 2분씩 시어합니다.', '알루미늄 호일로 감싸 5분 레스팅 후 서빙합니다.'],
-        ings: [{ name: '소 안심 400g', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }, { name: '무염버터 30g', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }],
-        globalFavs: 412
-    },
-    {
-        id: 'demo-4', title: 'Signature 간장 볶음밥 by Sam Choi #4', author: 'Sam Choi',
-        category: 'fridge', tags: ['자취', '초간단', '혼밥', '볶음밥'], date: '2026-02-22T00:00:00Z',
+        id: 'recipe-2',
+        title: '류수영 계란볶음밥',
+        author: '류수영',
+        category: 'fridge',
+        tags: ['자취', '초간단', '혼밥', '볶음밥', '계란', '5분요리'],
+        date: '2026-02-24T00:00:00Z',
         img: 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?q=80&w=800&auto=format&fit=crop',
-        source: 'https://www.youtube.com',
-        steps: ['찬밥과 계란, 파를 준비합니다.', '팬에 기름을 두르고 계란을 스크램블합니다.', '밥을 넣고 간장 2큰술을 둘러 강불에 볶습니다.', '송송 썬 파를 올려 완성합니다.'],
-        ings: [{ name: '찬밥 1공기', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }, { name: '진간장', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }],
-        globalFavs: 156
+        source: 'https://www.youtube.com/@ryusueyoung',
+        desc: '배우 류수영의 만능 계란볶음밥! 냉장고에 있는 재료만으로 5분 안에 뚝딱 만들 수 있는 자취생 최애 레시피. 간장 버터의 고소한 맛이 중독성이 있습니다.',
+        steps: [
+            '찬밥 1공기(약 200g)를 준비합니다. 갓 지은 밥보다 찬밥이 더 맛있어요!',
+            '계란 2개를 볼에 깨고, 소금 한 꼬집을 넣어 잘 풀어줍니다.',
+            '팬에 식용유 1큰술을 두르고 강불로 가열합니다. 팬이 충분히 뜨거워야 해요!',
+            '계란물을 팬에 붓고 5초간 기다린 뒤 바로 찬밥을 올립니다.',
+            '주걱으로 밥을 잘게 부수며 빠르게 볶아줍니다. (약 1~2분)',
+            '밥알이 하나하나 분리되면 간장 1.5큰술을 팬 가장자리에 둘러 넣습니다.',
+            '버터 10g을 넣고 30초간 빠르게 섞어 코팅합니다.',
+            '파기름용 송송 썬 대파를 넣고 10초 더 볶으면 완성!',
+            '접시에 담고, 취향에 따라 참기름, 김가루, 깨를 뿌려주세요.'
+        ],
+        ings: [
+            { name: '계란 2개', search: '계란 30구' },
+            { name: '찬밥 1공기', search: '즉석밥' },
+            { name: '진간장', search: '진간장' },
+            { name: '무염버터', search: '무염버터' },
+            { name: '대파', search: '대파' },
+            { name: '김가루', search: '김가루' },
+            { name: '참기름', search: '참기름' },
+            { name: '통깨', search: '통깨' }
+        ],
+        globalFavs: 2156
     },
     {
-        id: 'demo-5', title: 'Signature 돈코츠 라멘 by Chef Ahn #5', author: 'Chef Ahn',
-        category: 'viral', tags: ['일식', '면요리', '국물', '라멘'], date: '2026-02-21T00:00:00Z',
+        id: 'recipe-3',
+        title: '에드워드 리 안심 스테이크',
+        author: '에드워드 리',
+        category: 'black-white',
+        tags: ['고기', '프리미엄', '파티', '스테이크', '흑백요리사', '양식'],
+        date: '2026-02-23T00:00:00Z',
+        img: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?q=80&w=800&auto=format&fit=crop',
+        source: 'https://www.youtube.com/@Netflix',
+        desc: '넷플릭스 흑백요리사에서 화제가 된 안심 스테이크 레시피. 레스토랑 수준의 퀄리티를 집에서도 재현할 수 있도록 단계별로 상세하게 설명합니다. 미디엄 레어 기준입니다.',
+        steps: [
+            '소 안심 400g을 냉장고에서 꺼내 30분간 실온에 둡니다. (고기가 차가우면 겉만 타요!)',
+            '키친타월로 고기 표면의 수분을 완전히 제거합니다. 이 과정이 크러스트의 핵심!',
+            '소금(꽃소금 or 말돈소금)을 고기 전체에 고르게 뿌립니다. 후추는 나중에!',
+            '무쇠 팬(또는 두꺼운 팬)을 최강불로 3분 이상 달궈 연기가 살짝 날 때까지 가열합니다.',
+            '식용유 1큰술을 두르고 고기를 올립니다. 앞뒤 각 2분씩 시어합니다.',
+            '불을 중불로 줄이고 무염버터 30g, 마늘 3쪽, 로즈마리를 넣습니다.',
+            '녹은 버터를 숟가락으로 떠서 고기 위에 반복해서 끼얹어줍니다. (Basting, 약 1분)',
+            '팬에서 꺼내 도마 위에 올리고 알루미늄 호일로 느슨하게 감싸 5분간 레스팅합니다.',
+            '레스팅이 끝나면 후추를 뿌리고 원하는 두께로 슬라이스합니다.',
+            '접시에 담고 팬에 남은 버터 소스를 뿌려 완성. 감자퓌레나 샐러드와 곁들이세요.'
+        ],
+        ings: [
+            { name: '소 안심 400g', search: '소 안심 스테이크' },
+            { name: '무염버터 30g', search: '무염버터' },
+            { name: '통마늘', search: '통마늘' },
+            { name: '로즈마리', search: '로즈마리 허브' },
+            { name: '말돈소금', search: '말돈 소금' },
+            { name: '통후추', search: '통후추 그라인더' },
+            { name: '올리브오일', search: '올리브오일' }
+        ],
+        globalFavs: 3201
+    },
+    {
+        id: 'recipe-4',
+        title: '승우아빠 알리오올리오',
+        author: '승우아빠',
+        category: 'viral',
+        tags: ['자취', '간단', '양식', '파스타', '알리오올리오', '10분요리'],
+        date: '2026-02-22T00:00:00Z',
+        img: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?q=80&w=800&auto=format&fit=crop',
+        source: 'https://www.youtube.com/@seungwoodad',
+        desc: '누적 조회수 1,000만의 승우아빠 알리오올리오 파스타. 마늘과 올리브오일의 심플한 조합인데 면수의 마법으로 레스토랑 맛을 내는 비밀 레시피입니다.',
+        steps: [
+            '냄비에 물 2L를 넣고 소금 2큰술을 넣어 강불에 끓입니다. (바닷물 정도 짠맛!)',
+            '스파게티 면 200g을 넣고, 포장지 표시 시간보다 1분 적게(약 7분) 삶습니다.',
+            '면을 삶는 동안, 팬에 올리브오일 4큰술을 넣고 약불에서 시작합니다.',
+            '마늘 5~6쪽을 얇게 슬라이스해서 약불에서 천천히 볶습니다. (절대 강불 금지! 타요)',
+            '마늘이 살짝 노릇해지면 페퍼론치노(건고추) 2~3개를 넣고 10초 볶습니다.',
+            '면수(면 삶은 물) 한 국자(약 100ml)를 팬에 넣고, 센 불에서 흔들어 유화시킵니다.',
+            '삶은 면을 바로 팬에 넣고 잘 버무립니다. 뻑뻑하면 면수를 조금씩 더 추가하세요.',
+            '불을 끄고 올리브오일 1큰술을 마무리로 둘러 윤기를 냅니다.',
+            '접시에 담고 파슬리 가루와 파르미지아노 치즈를 뿌리면 완성!'
+        ],
+        ings: [
+            { name: '스파게티 면 500g', search: '스파게티 면' },
+            { name: '올리브오일 (엑스트라 버진)', search: '엑스트라버진 올리브오일' },
+            { name: '통마늘', search: '통마늘' },
+            { name: '페퍼론치노(건고추)', search: '페퍼론치노' },
+            { name: '파르미지아노 치즈', search: '파르미지아노 레지아노' },
+            { name: '파슬리', search: '파슬리 건조' }
+        ],
+        globalFavs: 1567
+    },
+    {
+        id: 'recipe-5',
+        title: '백종원 돈코츠 라멘',
+        author: '백종원',
+        category: 'viral',
+        tags: ['일식', '면요리', '국물', '라멘', '돈코츠', '보양식'],
+        date: '2026-02-21T00:00:00Z',
         img: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?q=80&w=800&auto=format&fit=crop',
-        source: 'https://www.youtube.com',
-        steps: ['돼지뼈 육수를 8시간 우려냅니다.', '차슈를 만들어 슬라이스합니다.', '라멘 면을 삶아 그릇에 담습니다.', '육수를 붓고 차슈, 반숙란, 파를 올려 완성합니다.'],
-        ings: [{ name: '라멘 생면 2인분', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }, { name: '돼지뼈 1kg', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }],
-        globalFavs: 321
+        source: 'https://www.youtube.com/@paaborecipe',
+        desc: '백종원 셰프의 간편 돈코츠(돼지뼈) 라멘. 정통 8시간 육수 대신 2시간 만에 진한 백탕 육수를 만드는 비법! 차슈와 반숙란 토핑까지 완벽하게 재현합니다.',
+        steps: [
+            '돼지뼈(등뼈) 1kg을 찬물에 30분 담가 핏물을 빼고, 끓는 물에 5분 데쳐 불순물을 제거합니다.',
+            '깨끗이 씻은 뼈를 압력솥에 넣고 물 2L, 양파 1개, 대파 1대, 마늘 5쪽을 함께 넣습니다.',
+            '추가 올리면 중불로 줄여 1시간 30분 끓입니다. (일반 냄비는 3시간)',
+            '차슈용 삼겹살 덩어리 300g을 간장 100ml, 미림 50ml, 설탕 2큰술, 물 200ml에 넣고 약불에서 1시간 조립니다.',
+            '반숙란: 물 끓을 때 냉장 계란을 넣고 정확히 6분 30초 삶은 뒤 얼음물에 식혀 껍질을 벗깁니다.',
+            '차슈 조림장에 반숙란을 2시간 이상 재워 양념란을 만듭니다.',
+            '육수가 완성되면 체에 걸러 뼈를 건져내고, 소금과 치킨스톡으로 간을 맞춥니다.',
+            '라멘 생면을 끓는 물에 1분 30초 삶아 찬물에 헹굽니다.',
+            '그릇에 육수를 붓고, 면 → 차슈 슬라이스 → 반숙란(반으로 가르기) → 파 → 김을 올립니다.',
+            '마무리로 참기름 한 방울, 후추를 뿌리면 일본 현지 맛 완성!'
+        ],
+        ings: [
+            { name: '돼지등뼈 1kg', search: '돼지등뼈' },
+            { name: '삼겹살 덩어리 300g', search: '삼겹살 덩어리' },
+            { name: '라멘 생면', search: '라멘 생면' },
+            { name: '계란 6개', search: '계란 30구' },
+            { name: '진간장', search: '진간장' },
+            { name: '미림', search: '미림' },
+            { name: '치킨스톡', search: '치킨스톡' },
+            { name: '김(구운김)', search: '구운김' }
+        ],
+        globalFavs: 2890
     },
     {
-        id: 'demo-6', title: 'Signature 떡볶이 by Choi HS #6', author: 'Choi HS',
-        category: 'fridge', tags: ['간식', '매운맛', '분식', '떡볶이'], date: '2026-02-20T00:00:00Z',
+        id: 'recipe-6',
+        title: '백종원 국물떡볶이',
+        author: '백종원',
+        category: 'fridge',
+        tags: ['간식', '매운맛', '분식', '떡볶이', '즉석', '야식'],
+        date: '2026-02-20T00:00:00Z',
         img: 'https://images.unsplash.com/photo-1635363638580-c2809d049eee?q=80&w=800&auto=format&fit=crop',
-        source: 'https://www.youtube.com',
-        steps: ['떡과 어묵, 대파를 준비합니다.', '물에 고추장, 고춧가루, 설탕, 간장을 풀어 양념장을 만듭니다.', '양념장이 끓으면 떡과 어묵을 넣고 졸입니다.', '떡이 말랑해지면 파를 올려 완성합니다.'],
-        ings: [{ name: '밀떡 400g', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }, { name: '고추장 3큰술', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }],
-        globalFavs: 278
+        source: 'https://www.youtube.com/@paaborecipe',
+        desc: '백종원의 3,000만 조회수 국물떡볶이. 고추장 + 고춧가루의 이중 양념으로 달콤매콤한 국물이 일품! 쫄깃한 밀떡과 진한 양념의 조화가 분식집 그 맛입니다.',
+        steps: [
+            '밀떡(또는 쌀떡) 400g을 찬물에 5분 담가 부드럽게 만듭니다.',
+            '어묵 2장을 세모 모양으로 잘라줍니다.',
+            '냄비에 물 500ml(2.5컵)을 넣고 끓입니다.',
+            '양념 만들기: 고추장 2큰술 + 고춧가루 1큰술 + 간장 1큰술 + 설탕 2큰술 + 다진마늘 1큰술을 끓는 물에 풀어줍니다.',
+            '양념이 녹으면 밀떡과 어묵을 넣고 중불에서 끓입니다.',
+            '7~8분 끓이면서 가끔 저어줍니다. 떡이 부풀면서 말랑해지면 OK!',
+            '대파 반 대를 어슷 썰어 넣고 1분 더 끓입니다.',
+            '삶은 계란 1~2개를 반으로 갈라 올리면 비주얼 UP!',
+            '불을 끄고 모짜렐라 치즈를 뿌리면 치즈떡볶이로 변신! (선택사항)'
+        ],
+        ings: [
+            { name: '밀떡 400g', search: '밀떡' },
+            { name: '어묵 사각', search: '사각어묵' },
+            { name: '고추장', search: '고추장' },
+            { name: '고춧가루', search: '고춧가루' },
+            { name: '설탕', search: '설탕' },
+            { name: '대파', search: '대파' },
+            { name: '계란', search: '계란 30구' },
+            { name: '모짜렐라 치즈', search: '모짜렐라 치즈' }
+        ],
+        globalFavs: 1645
     },
     {
-        id: 'demo-7', title: 'Signature 카레라이스 by Master Lee #7', author: 'Master Lee',
-        category: 'fridge', tags: ['자취', '간단', '카레', '혼밥'], date: '2026-02-19T00:00:00Z',
+        id: 'recipe-7',
+        title: '자취요리신 카레라이스',
+        author: '자취요리신',
+        category: 'fridge',
+        tags: ['자취', '간단', '카레', '혼밥', '10분요리', '초보'],
+        date: '2026-02-19T00:00:00Z',
         img: 'https://images.unsplash.com/photo-1565557623262-b51c2513a641?q=80&w=800&auto=format&fit=crop',
-        source: 'https://www.youtube.com',
-        steps: ['감자, 당근, 양파를 깍둑썰기 합니다.', '고기를 먼저 볶고 채소를 넣어 함께 볶습니다.', '물을 넣고 끓으면 카레 루를 녹입니다.', '걸쭉해질 때까지 약불에 끓이면 완성!'],
-        ings: [{ name: '카레 루 1/2박스', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }, { name: '감자 2개', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }],
-        globalFavs: 143
+        source: 'https://www.youtube.com/@cookingsin',
+        desc: '자취생이라면 꼭 알아야 할 초간단 카레라이스. 채소 듬뿍, 영양 만점이면서 냉장고 파먹기에 최적인 만능 레시피. 3일은 먹을 수 있는 양으로 만듭니다!',
+        steps: [
+            '감자 2개, 당근 1개, 양파 1개를 한입 크기(약 2cm)로 깍둑썰기합니다.',
+            '닭가슴살 200g(또는 돼지고기)을 한입 크기로 자릅니다.',
+            '냄비에 식용유 1큰술을 두르고 양파를 먼저 2분 볶아 투명하게 만듭니다.',
+            '고기를 넣고 겉면이 하얗게 익을 때까지 2분 볶습니다.',
+            '감자, 당근을 넣고 1분 더 볶습니다.',
+            '물 700ml(약 3.5컵)을 붓고, 뚜껑을 덮어 센 불에 끓입니다.',
+            '끓어오르면 중불로 줄이고, 감자가 익을 때까지 약 15분간 끓입니다.',
+            '불을 끄고 카레 루 절반(약 3~4조각)을 넣어 잘 녹입니다.',
+            '약불에서 저어가며 5분 더 끓여 걸쭉하게 만들면 완성!',
+            '밥 위에 카레를 듬뿍 끼얹고, 취향에 따라 후쿠진즈케나 치즈를 올리세요.'
+        ],
+        ings: [
+            { name: '카레 루 (오뚜기 or 하우스)', search: '카레 루' },
+            { name: '감자 2개', search: '감자' },
+            { name: '당근 1개', search: '당근' },
+            { name: '양파 1개', search: '양파' },
+            { name: '닭가슴살 200g', search: '닭가슴살' },
+            { name: '후쿠진즈케 (선택)', search: '후쿠진즈케' }
+        ],
+        globalFavs: 987
     },
     {
-        id: 'demo-8', title: 'Signature 치킨 샐러드 by Chef Won #8', author: 'Chef Won',
-        category: 'viral', tags: ['다이어트', '건강', '샐러드'], date: '2026-02-18T00:00:00Z',
+        id: 'recipe-8',
+        title: '홍석천 닭가슴살 샐러드',
+        author: '홍석천',
+        category: 'viral',
+        tags: ['다이어트', '건강', '샐러드', '닭가슴살', '단백질', '저칼로리'],
+        date: '2026-02-18T00:00:00Z',
         img: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=800&auto=format&fit=crop',
-        source: 'https://www.youtube.com',
-        steps: ['닭가슴살을 삶아 식힌 뒤 결대로 찢습니다.', '야채를 세척하고 한입 크기로 자릅니다.', '올리브오일, 레몬즙, 소금으로 드레싱을 만듭니다.', '접시에 담고 드레싱을 뿌려 완성합니다.'],
-        ings: [{ name: '닭가슴살 200g', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }, { name: '샐러드 채소 믹스', cheap_code: 'bL4A4y', best_code: 'bL4A6z' }],
-        globalFavs: 198
+        source: 'https://www.youtube.com/@hongseokcheon',
+        desc: '연예인들이 즐겨먹는 고단백 저칼로리 샐러드. 홍석천 셰프의 특제 발사믹 드레싱이 핵심! 촉촉한 닭가슴살과 신선한 채소의 완벽한 조합으로 다이어트 식단의 끝판왕입니다.',
+        steps: [
+            '닭가슴살 200g에 소금, 후추를 뿌리고 10분 재워둡니다.',
+            '냄비에 물을 끓이고, 닭가슴살을 넣은 뒤 불을 끄고 뚜껑을 덮어 15분 익힙니다. (촉촉함의 비밀!)',
+            '익힌 닭가슴살을 찬물에 식힌 뒤 결대로 찢어줍니다.',
+            '로메인, 루꼴라, 어린잎 등 샐러드 채소를 찬물에 씻고 물기를 완전히 제거합니다.',
+            '방울토마토 8~10개를 반으로 가릅니다.',
+            '아보카도 1개를 반으로 갈라 씨를 빼고 슬라이스합니다.',
+            '삶은 계란 1개를 4등분합니다.',
+            '드레싱: 올리브오일 2큰술 + 발사믹식초 1큰술 + 꿀 1작은술 + 머스타드 1작은술 + 소금 약간을 잘 섞습니다.',
+            '넓은 접시에 채소를 깔고, 닭가슴살 → 토마토 → 아보카도 → 계란 순으로 올립니다.',
+            '드레싱을 뿌리고 크루통이나 호두를 올려 마무리합니다.'
+        ],
+        ings: [
+            { name: '닭가슴살 200g', search: '닭가슴살' },
+            { name: '샐러드 채소 믹스', search: '샐러드 채소 믹스' },
+            { name: '방울토마토', search: '방울토마토' },
+            { name: '아보카도', search: '아보카도' },
+            { name: '계란', search: '계란 30구' },
+            { name: '발사믹 식초', search: '발사믹 식초' },
+            { name: '올리브오일', search: '올리브오일' },
+            { name: '디종 머스타드', search: '디종 머스타드' }
+        ],
+        globalFavs: 1234
     },
 ];
 
@@ -158,8 +354,8 @@ const SignatureLogo = ({ onClick }) => (
 );
 
 export default function App() {
-    // 로컬 데모 모드: Firebase 대신 샘플 데이터 사용
-    const [recipes, setRecipes] = useState(DEMO_RECIPES);
+    // 실제 레시피 데이터 사용
+    const [recipes, setRecipes] = useState(REAL_RECIPES);
     const [lang, setLang] = useState('ko');
     const [view, setView] = useState('user');
     const [showLoginModal, setShowLoginModal] = useState(false);
@@ -518,7 +714,10 @@ export default function App() {
                                 ))}
                             </div>
                             <h2 className="text-6xl md:text-8xl font-black mb-10 tracking-tighter leading-[0.85]" style={{ fontFamily: 'Georgia, serif' }}>{activeRecipe.title}</h2>
-                            <p className="text-slate-400 font-bold uppercase text-[11px] mb-20 flex items-center gap-4"><MapPin className="w-4 h-4 text-amber-500" /> Curated by {activeRecipe.author}</p>
+                            <p className="text-slate-400 font-bold uppercase text-[11px] mb-6 flex items-center gap-4"><MapPin className="w-4 h-4 text-amber-500" /> Curated by {activeRecipe.author}</p>
+                            {activeRecipe.desc && (
+                                <p className="text-lg text-slate-600 leading-relaxed mb-20 bg-amber-50/50 border border-amber-100 rounded-3xl p-8">{activeRecipe.desc}</p>
+                            )}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-24">
                                 <a href={activeRecipe.source} target="_blank" rel="noopener noreferrer" className="py-8 bg-slate-50 border border-slate-100 rounded-[40px] flex flex-col items-center justify-center gap-2 font-black text-[11px] uppercase tracking-widest hover:bg-slate-100 transition-all"><Globe className="w-6 h-6 text-indigo-500" /> {t.view_orig}</a>
                                 <button onClick={() => setShowShop(true)} className="py-8 bg-black text-white rounded-[40px] flex flex-col items-center justify-center gap-2 font-black text-[11px] uppercase shadow-2xl active:scale-95 transition-all"><ShoppingBag className="w-6 h-6 text-amber-400" /> {t.buy_ing}</button>
@@ -541,27 +740,39 @@ export default function App() {
             {showShop && activeRecipe && (
                 <div className="fixed inset-0 z-[80] flex items-center justify-center p-6 bg-slate-900/80 backdrop-blur-2xl animate-fade-in">
                     <div className="bg-white w-full max-w-sm rounded-[72px] overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
-                        <div className="p-14 text-center bg-slate-50 border-b">
-                            <h3 className="text-3xl font-black mb-10 text-slate-900 tracking-tighter italic" style={{ fontFamily: 'Georgia, serif' }}>{t.shop}</h3>
-                            <div className="flex p-2 bg-slate-200 rounded-[32px]">
-                                <button onClick={() => setLinkType('cheap')} className={`flex-1 py-5 text-[10px] font-black rounded-[24px] transition-all ${linkType === 'cheap' ? 'bg-white text-slate-900 shadow-2xl' : 'text-slate-500'}`}>{t.cheap}</button>
-                                <button onClick={() => setLinkType('best')} className={`flex-1 py-5 text-[11px] font-black rounded-[24px] transition-all ${linkType === 'best' ? 'bg-white text-slate-900 shadow-2xl' : 'text-slate-500'}`}>{t.best}</button>
-                            </div>
+                        <div className="p-10 text-center bg-slate-50 border-b">
+                            <h3 className="text-3xl font-black mb-6 text-slate-900 tracking-tighter italic" style={{ fontFamily: 'Georgia, serif' }}>{t.shop}</h3>
+                            <p className="text-xs text-slate-400 mb-6">재료를 개별 또는 전체 구매할 수 있습니다</p>
+                            {/* 전체 재료 일괄 구매 버튼 */}
+                            <button
+                                onClick={() => {
+                                    activeRecipe.ings?.forEach((ing, i) => {
+                                        setTimeout(() => {
+                                            window.open(coupangSearchUrl(ing.search), '_blank');
+                                        }, i * 300);
+                                    });
+                                    showToast(`${activeRecipe.ings?.length}개 재료 쿠팡에서 열림!`);
+                                }}
+                                className="w-full py-5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-[24px] font-black text-sm shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3 uppercase tracking-widest"
+                            >
+                                <ShoppingBag className="w-5 h-5" />
+                                전체 재료 일괄 구매
+                            </button>
                         </div>
-                        <div className="p-10 overflow-y-auto space-y-4 no-scrollbar">
+                        <div className="p-8 overflow-y-auto space-y-3 no-scrollbar">
                             {activeRecipe.ings?.map((ing, i) => (
-                                <div key={i} className="flex items-center justify-between p-8 bg-slate-50 rounded-[48px] border border-slate-100 hover:bg-white hover:shadow-xl transition-all cursor-pointer group">
-                                    <div className="pr-4">
-                                        <p className="text-[10px] font-black text-amber-600 uppercase mb-2 tracking-widest">{linkType} pick</p>
-                                        <p className="text-lg font-black text-slate-900 line-clamp-1">{ing.name}</p>
+                                <div key={i} className="flex items-center justify-between p-6 bg-slate-50 rounded-[32px] border border-slate-100 hover:bg-white hover:shadow-xl transition-all cursor-pointer group">
+                                    <div className="pr-4 flex-1">
+                                        <p className="text-[10px] font-black text-amber-600 uppercase mb-1 tracking-widest">Coupang</p>
+                                        <p className="text-base font-black text-slate-900 line-clamp-1">{ing.name}</p>
                                     </div>
-                                    <a href={`https://link.coupang.com/a/${linkType === 'cheap' ? ing.cheap_code : ing.best_code}?subid=rkdghkclgns`} target="_blank" rel="noopener noreferrer" className="px-8 py-4 bg-slate-900 text-white rounded-3xl text-[11px] font-black shadow-lg hover:bg-amber-600 transition-colors uppercase tracking-widest">Add</a>
+                                    <a href={coupangSearchUrl(ing.search)} target="_blank" rel="noopener noreferrer" className="shrink-0 px-6 py-3 bg-slate-900 text-white rounded-2xl text-[11px] font-black shadow-lg hover:bg-amber-600 transition-colors uppercase tracking-widest">구매</a>
                                 </div>
                             ))}
                         </div>
-                        <div className="p-14 border-t border-slate-50 text-center">
-                            <p className="text-[11px] text-slate-400 mb-10 italic leading-relaxed">{t.legal}</p>
-                            <button onClick={() => setShowShop(false)} className="w-full py-7 bg-black text-white rounded-[40px] font-black text-sm uppercase tracking-[0.4em] shadow-2xl hover:bg-slate-800 transition-all">Close</button>
+                        <div className="p-10 border-t border-slate-50 text-center">
+                            <p className="text-[11px] text-slate-400 mb-8 italic leading-relaxed">{t.legal}</p>
+                            <button onClick={() => setShowShop(false)} className="w-full py-6 bg-black text-white rounded-[40px] font-black text-sm uppercase tracking-[0.4em] shadow-2xl hover:bg-slate-800 transition-all">Close</button>
                         </div>
                     </div>
                 </div>
